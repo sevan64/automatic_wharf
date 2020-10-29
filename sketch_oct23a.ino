@@ -58,7 +58,10 @@ void loop() {
     }
     else if(!huskylens.available()){
       Serial.println(F("No block or arrow apears on the screen!"));
-      delay(500);
+      servo1.writeMicroseconds(1900);
+      servo2.writeMicroseconds(1500);
+      servo3.writeMicroseconds(1100);
+      delay(200);
     }
     else
     {
@@ -103,6 +106,6 @@ void printResult(HUSKYLENSResult result){
         servo1.writeMicroseconds(1900);
         servo2.writeMicroseconds(1500);
         servo3.writeMicroseconds(1100);
-        delay(200);
+        delay(500);
     }
 }
