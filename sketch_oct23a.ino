@@ -1,15 +1,43 @@
 #include "HUSKYLENS.h"
 #include "SoftwareSerial.h"
+#include <ESP32Servo.h>
 
 HUSKYLENS huskylens;
 SoftwareSerial mySerial(4, 0);
 //HUSKYLENS green line >> Pin 10; blue line >>Pin11
+Servo servo1;
+Servo servo2;
+Servo servo3;
+const int maxUs = 1900;
+const int minUs = 1100;
+const int servo1Pin = 19;//表記はD12 右後ろ 正の方向が後退 1100で後退
+const int servo1Period = 50;
+const int servo2Pin = 23;//表記はD11 前　正の方向が前身 1100で前進
+const int servo2Period = 50;
+const int servo3Pin = 18;//表記はD13 左後ろ 正の方向が後退 1100で後退
+const int servo3Period = 50;
+int servo1Us = 1500;
+int servo2Us = 1500;
+int servo3Us = 1500;
+
 void printResult(HUSKYLENSResult result);
 
 void setup() {
     pinMode(2, OUTPUT);
     Serial.begin(115200);
     mySerial.begin(9600);
+    servo1.setPeriodHertz(servo1Period);
+    servo1.attach(servo1Pin, minUs, maxUs);
+
+    servo2.setPeriodHertz(servo2Period);
+    servo2.attach(servo2Pin, minUs, maxUs);
+
+    servo3.setPeriodHertz(servo3Period);
+    servo3.attach(servo3Pin, minUs, maxUs);
+
+    servo1.writeMicroseconds(1500);
+    servo2.writeMicroseconds(1500);
+    servo3.writeMicroseconds(1500);
     while (!huskylens.begin(mySerial))
     {
         Serial.println(F("Begin failed!"));
@@ -46,16 +74,23 @@ void printResult(HUSKYLENSResult result){
     if (result.command == COMMAND_RETURN_BLOCK){
         if (result.xCenter > 160){
             Serial.println(F("Obeject's Position : RIGHT"));
-            digitalWrite(2,HIGH);
+            servo1.writeMicroseconds(1100);
+            servo2.writeMicroseconds(1100);
+            servo3.writeMicroseconds(1900);
             delay(500);
         }
         else if (result.xCenter == 160){
             Serial.println(F("Obeject's Position : MIDDLE"));
+            servo1.writeMicroseconds(1900);
+            servo2.writeMicroseconds(1100);
+            servo3.writeMicroseconds(1900);
             delay(500);
         }
         else {
             Serial.println(F("Obeject's Position : LEFT"));
-            digitalWrite(2,LOW);
+            servo1.writeMicroseconds(1900);
+            servo2.writeMicroseconds(1100);
+            servo3.writeMicroseconds(1100);
             delay(500);
         }
     }
@@ -65,6 +100,9 @@ void printResult(HUSKYLENSResult result){
     }
     else{
         Serial.println("Object unknown!");
-        delay(500);
+        servo1.writeMicroseconds(1900);
+        servo2.writeMicroseconds(1500);
+        servo3.writeMicroseconds(1100);
+        delay(200);
     }
 }
